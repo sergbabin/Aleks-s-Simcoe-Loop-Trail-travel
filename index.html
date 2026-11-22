@@ -1,640 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simcoe County Loop Trail - Aleks's adventures.</title>
-  <style>
-    :root {
-      --bg-color: #121417;
-      --slide-bg: #ffffff;
-      --text-main: #1f2328;
-      --text-muted: #59636e;
-      --accent: #fc4c02;
-      --accent-hover: #e34402;
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    html, body {
-      height: 100%;
-      width: 100%;
-      overflow: hidden;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg-color);
-      color: #ffffff;
-      height: 100dvh;
-      display: flex;
-      flex-direction: column;
-    }
-
-    /* Top bar */
-    .top-bar {
-      height: 46px;
-      padding: 0 20px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      background: rgba(255, 255, 255, 0.05);
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-      flex-shrink: 0;
-      z-index: 20;
-    }
-
-    .deck-title {
-      font-size: 14px;
-      font-weight: 600;
-      color: #e6edf3;
-    }
-
-    .top-controls {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .slide-counter {
-      font-size: 13px;
-      font-variant-numeric: tabular-nums;
-      color: #9198a1;
-    }
-
-    .btn-top {
-      background: rgba(255, 255, 255, 0.1);
-      color: #ffffff;
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      border-radius: 6px;
-      padding: 5px 10px;
-      font-size: 12px;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .btn-top:hover {
-      background: rgba(255, 255, 255, 0.2);
-    }
-
-    /* Stage */
-    .stage {
-      flex: 1 1 auto;
-      min-height: 0;
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 12px 16px;
-      overflow: hidden;
-    }
-
-    /* Individual Slides */
-    .slide {
-      display: none;
-      width: 100%;
-      max-width: 960px;
-      height: 100%;
-      background: var(--slide-bg);
-      color: var(--text-main);
-      border-radius: 14px;
-      padding: 16px 24px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-      flex-direction: column;
-      animation: fadeIn 0.25s ease;
-    }
-
-    .slide.active {
-      display: flex;
-    }
-
-    @keyframes fadeIn {
-      from {
-        opacity: 0;
-        transform: translateY(6px);
-      }
-      to {
-        opacity: 1;
-        transform: translateY(0);
-      }
-    }
-
-    /* Title & Ending Slide */
-    .slide-cover {
-      text-align: center;
-      padding: 40px;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .badge {
-      display: inline-block;
-      background: #fff2ec;
-      color: var(--accent);
-      font-weight: 700;
-      font-size: 13px;
-      text-transform: uppercase;
-      letter-spacing: 1px;
-      padding: 6px 14px;
-      border-radius: 999px;
-      margin-bottom: 18px;
-    }
-
-    .slide-cover h1 {
-      font-size: 42px;
-      line-height: 1.25;
-      margin-bottom: 28px;
-      color: var(--text-main);
-      text-align: center;
-    }
-
-    .slide-cover h1 .subtitle-line {
-      display: block;
-      font-size: 32px;
-      font-weight: 600;
-      color: var(--text-muted);
-      margin-top: 6px;
-    }
-
-    .slide-end h1 {
-      font-size: 56px;
-      margin-bottom: 16px;
-    }
-
-    .end-subtitle {
-      font-size: 18px;
-      color: var(--text-muted);
-    }
-
-    .hint-box {
-      font-size: 14px;
-      color: var(--text-muted);
-      background: #f6f8fa;
-      padding: 10px 18px;
-      border-radius: 8px;
-      border: 1px solid #d0d7de;
-    }
-
-    kbd {
-      background: #ffffff;
-      border: 1px solid #afb8c1;
-      border-radius: 4px;
-      padding: 2px 6px;
-      font-family: monospace;
-      font-size: 13px;
-    }
-
-    /* Compact Activity Header */
-    .slide-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      border-bottom: 1px solid #eaeef2;
-      padding-bottom: 8px;
-      margin-bottom: 10px;
-      flex-shrink: 0;
-    }
-
-    .slide-header h2 {
-      font-size: 20px;
-      color: var(--text-main);
-    }
-
-    .step-tag {
-      font-size: 13px;
-      font-weight: 700;
-      color: var(--accent);
-    }
-
-    /* Scrollable Embed Viewport positioned to skip top photos */
-    .embed-viewport {
-      flex: 1 1 auto;
-      min-height: 0;
-      width: 100%;
-      overflow-y: auto;
-      display: flex;
-      justify-content: center;
-      align-items: flex-start;
-      scroll-behavior: auto;
-    }
-
-    .embed-wrapper {
-      width: 100%;
-      display: flex;
-      justify-content: center;
-    }
-
-    /* Split layout for Overview Map + Stats Panel */
-    .map-split-layout {
-      flex: 1 1 auto;
-      min-height: 0;
-      width: 100%;
-      display: flex;
-      gap: 16px;
-    }
-
-    .route-stats-panel {
-      width: 235px;
-      flex-shrink: 0;
-      background: #f6f8fa;
-      border: 1px solid #d0d7de;
-      border-radius: 8px;
-      padding: 14px 16px;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      overflow-y: auto;
-    }
-
-    .stat-item {
-      border-bottom: 1px solid #e1e4e8;
-      padding-bottom: 8px;
-      margin-bottom: 8px;
-    }
-
-    .stat-item:last-child {
-      border-bottom: none;
-      padding-bottom: 0;
-      margin-bottom: 0;
-    }
-
-    .stat-label {
-      font-size: 11px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      color: var(--text-muted);
-      margin-bottom: 3px;
-    }
-
-    .stat-value {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--text-main);
-    }
-
-    /* Full-height Google My Maps Container */
-    .map-container {
-      flex: 1 1 auto;
-      min-height: 0;
-      width: 100%;
-      border-radius: 8px;
-      overflow: hidden;
-      border: 1px solid #d0d7de;
-    }
-
-    .map-container iframe {
-      width: 100%;
-      height: 100%;
-      border: 0;
-      display: block;
-    }
-
-    /* Bottom Navigation */
-    .bottom-bar {
-      height: 52px;
-      padding: 0 20px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 20px;
-      background-color: var(--bg-color);
-      border-top: 1px solid rgba(255, 255, 255, 0.08);
-      flex-shrink: 0;
-      position: relative;
-      z-index: 30;
-    }
-
-    .nav-btn {
-      background: var(--accent);
-      color: #ffffff;
-      border: none;
-      border-radius: 8px;
-      padding: 7px 18px;
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: background 0.2s;
-    }
-
-    .nav-btn:hover:not(:disabled) {
-      background: var(--accent-hover);
-    }
-
-    .nav-btn:disabled {
-      background: #30363d;
-      color: #8b949e;
-      cursor: not-allowed;
-    }
-
-    .progress-dots {
-      display: flex;
-      gap: 8px;
-    }
-
-    .dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 50%;
-      background: rgba(255, 255, 255, 0.25);
-      border: none;
-      cursor: pointer;
-      transition: transform 0.2s, background 0.2s;
-    }
-
-    .dot.active {
-      background: var(--accent);
-      transform: scale(1.25);
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Simcoe County Loop Trail - Aleks's adventures</title>
+<script src="https://strava-embeds.com/embed.js" async></script>
+<style>
+:root{--bg:#121417;--card:#fff;--txt:#1f2328;--mut:#59636e;--acc:#fc4c02;--acc2:#e34402}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;width:100%;overflow:hidden;background:var(--bg);color:#fff;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+.top{position:fixed;top:0;left:0;right:0;height:46px;padding:0 16px;display:flex;align-items:center;justify-content:space-between;background:#1b1f24;border-bottom:1px solid rgba(255,255,255,.1);z-index:99}
+.ttl{font-size:14px;font-weight:600;color:#e6edf3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-right:10px}
+.ctr{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.cnt{font-size:13px;font-variant-numeric:tabular-nums;color:#9198a1}
+.btop{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.15);border-radius:6px;padding:5px 10px;font-size:12px;cursor:pointer}
+.btop:hover{background:rgba(255,255,255,.2)}
+.bot{position:fixed;bottom:0;left:0;right:0;height:52px;padding:0 16px;display:flex;align-items:center;justify-content:center;gap:14px;background:#1b1f24;border-top:1px solid rgba(255,255,255,.1);z-index:99}
+.nbtn{background:var(--acc);color:#fff;border:none;border-radius:8px;padding:7px 16px;font-size:13px;font-weight:600;cursor:pointer;flex-shrink:0}
+.nbtn:hover:not(:disabled){background:var(--acc2)}
+.nbtn:disabled{background:#30363d;color:#8b949e;cursor:not-allowed}
+.dots{display:flex;gap:6px}
+.dot{width:8px;height:8px;border-radius:50%;background:rgba(255,255,255,.25);border:none;cursor:pointer;transition:.2s}
+.dot.on{background:var(--acc);transform:scale(1.25)}
+.stg{position:fixed;top:46px;bottom:52px;left:0;right:0;display:flex;align-items:center;justify-content:center;padding:12px 16px;overflow:hidden}
+.sl{position:absolute;width:calc(100% - 32px);max-width:960px;height:calc(100% - 24px);background:var(--card);color:var(--txt);border-radius:14px;padding:16px 24px;box-shadow:0 20px 50px rgba(0,0,0,.5);display:flex;flex-direction:column;overflow:hidden;opacity:0;visibility:hidden;pointer-events:none;z-index:1;transition:opacity .2s}
+.sl.on{opacity:1;visibility:visible;pointer-events:auto;z-index:5}
+.cov{text-align:center;padding:32px 24px;align-items:center;justify-content:center}
+.bdg{display:inline-block;background:#fff2ec;color:var(--acc);font-weight:700;font-size:13px;text-transform:uppercase;letter-spacing:1px;padding:6px 14px;border-radius:999px;margin-bottom:18px}
+.cov h1{font-size:42px;line-height:1.25;margin-bottom:28px;color:var(--txt)}
+.cov h1 span{display:block;font-size:32px;font-weight:600;color:var(--mut);margin-top:6px}
+.end h1{font-size:56px;margin-bottom:16px}
+.end p{font-size:18px;color:var(--mut)}
+.hnt{font-size:14px;color:var(--mut);background:#f6f8fa;padding:10px 18px;border-radius:8px;border:1px solid #d0d7de}
+kbd{background:#fff;border:1px solid #afb8c1;border-radius:4px;padding:2px 6px;font-family:monospace;font-size:13px}
+.hd{display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #eaeef2;padding-bottom:8px;margin-bottom:10px;flex-shrink:0}
+.hd h2{font-size:20px;color:var(--txt)}
+.tag{font-size:13px;font-weight:700;color:var(--acc);margin-left:8px}
+.vp{flex:1 1 auto;min-height:0;width:100%;overflow:auto;display:flex;justify-content:center;align-items:flex-start}
+.wr{width:100%;min-width:680px;display:flex;justify-content:center}
+.ov{flex:1 1 auto;min-height:0;width:100%;display:flex;flex-direction:column;gap:10px}
+.st{width:100%;flex-shrink:0;background:#f6f8fa;border:1px solid #d0d7de;border-radius:8px;padding:8px 12px;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px}
+.si{min-width:0;padding:2px 6px;border-right:1px solid #e1e4e8}
+.si:last-child{border-right:none}
+.slb{font-size:10px;font-weight:600;text-transform:uppercase;color:var(--mut);margin-bottom:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.svl{font-size:14px;font-weight:700;color:var(--txt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mc{flex:1 1 auto;min-height:0;width:100%;border-radius:8px;overflow:hidden;border:1px solid #d0d7de}
+.mc iframe{width:100%;height:100%;border:0;display:block}
+@media(max-width:640px){
+.stg{padding:8px}.sl{width:calc(100% - 16px);height:calc(100% - 16px);padding:12px 14px;border-radius:10px}
+.cov h1{font-size:28px;margin-bottom:20px}.cov h1 span{font-size:21px}.end h1{font-size:40px}.end p{font-size:15px}
+.hd h2{font-size:16px}.st{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px 4px;padding:6px 8px}
+.si{border-right:none;padding:2px 4px}.slb{font-size:9px}.svl{font-size:12px}
+.nbtn{padding:6px 12px;font-size:12px}.bot{gap:8px;padding:0 10px}.dots{gap:4px}.dot{width:7px;height:7px}
+.btop{padding:4px 8px;font-size:11px}
+}
+</style>
+<script>
+document.addEventListener('DOMContentLoaded',()=>{
+const sl=Array.from(document.querySelectorAll('.sl')),pb=document.getElementById('pb'),nb=document.getElementById('nb'),sc=document.getElementById('sc'),dc=document.getElementById('dc'),fb=document.getElementById('fb'),sb=document.getElementById('sb');
+let cur=0,mf=true;
+sl.forEach((_,i)=>{const d=document.createElement('button');d.type='button';d.className='dot'+(i===0?' on':'');d.onclick=()=>go(i);dc.appendChild(d)});
+const dots=Array.from(document.querySelectorAll('.dot'));
+function align(s){const v=s.querySelector('.vp');if(!v)return;if(!mf){v.scrollTop=0;return}const f=v.querySelector('iframe');v.scrollTop=(f&&f.offsetHeight>v.clientHeight)?Math.min(f.offsetHeight-v.clientHeight,260):0}
+function go(i){if(i<0||i>=sl.length)return;cur=i;sl.forEach((s,x)=>{s.classList.toggle('on',x===cur);if(x===cur){requestAnimationFrame(()=>align(s));setTimeout(()=>align(s),150)}});dots.forEach((d,x)=>d.classList.toggle('on',x===cur));sc.textContent=`${cur+1} / ${sl.length}`;pb.disabled=cur===0;nb.disabled=cur===sl.length-1}
+pb.onclick=()=>go(cur-1);nb.onclick=()=>go(cur+1);
+sb.onclick=()=>{mf=!mf;sb.textContent=mf?'View: Map Focus':'View: Top (Photos)';align(sl[cur])};
+function fs(){if(!document.fullscreenElement)document.documentElement.requestFullscreen().catch(()=>{});else document.exitFullscreen().catch(()=>{})}
+fb.onclick=fs;
+document.addEventListener('keydown',e=>{
+if(e.key==='ArrowRight'||e.key==='PageDown'||e.key===' '){e.preventDefault();go(cur+1)}
+else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();go(cur-1)}
+else if(e.key==='Home'){e.preventDefault();go(0)}
+else if(e.key==='End'){e.preventDefault();go(sl.length-1)}
+else if(e.key.toLowerCase()==='f')fs();
+});
+let tx=0;
+document.addEventListener('touchstart',e=>{tx=e.changedTouches[0].screenX},{passive:true});
+document.addEventListener('touchend',e=>{const d=e.changedTouches[0].screenX-tx;if(Math.abs(d)>50)go(cur+(d<0?1:-1))},{passive:true});
+setTimeout(()=>{if(window.StravaEmbeds&&window.StravaEmbeds.process)window.StravaEmbeds.process();sl.forEach(align)},1000);
+go(0);
+});
+</script>
 </head>
 <body>
-
-  <header class="top-bar">
-    <div class="deck-title">Simcoe County Loop Trail - Aleks's adventures.</div>
-    <div class="top-controls">
-      <button type="button" class="btn-top" id="styleToggleBtn" title="Switch between Standard (with photos) and Compact (map first)">View: Map Focus</button>
-      <span class="slide-counter" id="slideCounter">1 / 10</span>
-      <button type="button" class="btn-top" id="fullscreenBtn" title="Toggle Fullscreen (F)">⛶ Fullscreen</button>
-    </div>
-  </header>
-
-  <main class="stage" id="stage">
-    <!-- Slide 0: Cover -->
-    <section class="slide slide-cover active">
-      <span class="badge">Show &amp; Tell</span>
-      <h1>
-        Simcoe County Loop Trail
-        <span class="subtitle-line">Aleks's adventures</span>
-      </h1>
-      <div class="hint-box">
-        Use <kbd>←</kbd> and <kbd>→</kbd> arrow keys to switch slides
-      </div>
-    </section>
-
-    <!-- Slide 1 -->
-    <section class="slide">
-      <div class="slide-header">
-        <h2>Adventure #1</h2>
-        <span class="step-tag">1 / 7</span>
-      </div>
-      <div class="embed-viewport">
-        <div class="embed-wrapper">
-          <div class="strava-embed-placeholder" data-embed-type="activity" data-embed-id="18851528278" data-style="standard" data-from-embed="false" data-token="ctCEVqKKS_HTw0u3CrSAhqA6ZB8ipxhDalFqZZ3HplI"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Slide 2 -->
-    <section class="slide">
-      <div class="slide-header">
-        <h2>Adventure #2</h2>
-        <span class="step-tag">2 / 7</span>
-      </div>
-      <div class="embed-viewport">
-        <div class="embed-wrapper">
-          <div class="strava-embed-placeholder" data-embed-type="activity" data-embed-id="19218403658" data-style="standard" data-from-embed="false" data-token="C2nmDiwMzu2i8UwHQKYjGZxYfGyYl4mxJN1wOZLDvEQ"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Slide 3 -->
-    <section class="slide">
-      <div class="slide-header">
-        <h2>Adventure #3</h2>
-        <span class="step-tag">3 / 7</span>
-      </div>
-      <div class="embed-viewport">
-        <div class="embed-wrapper">
-          <div class="strava-embed-placeholder" data-embed-type="activity" data-embed-id="19600513041" data-style="standard" data-from-embed="false" data-token="SHn22fOw8VTNenNc0w86JEoVYDaFUrfZaJZarAiOYdw"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Slide 4 -->
-    <section class="slide">
-      <div class="slide-header">
-        <h2>Adventure #4</h2>
-        <span class="step-tag">4 / 7</span>
-      </div>
-      <div class="embed-viewport">
-        <div class="embed-wrapper">
-          <div class="strava-embed-placeholder" data-embed-type="activity" data-embed-id="20548714006" data-style="standard" data-from-embed="false" data-token="nH8krHXMiphPrDXl9EGyEEIOcHuOIjSz0cDvQzmvzLY"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Slide 5 -->
-    <section class="slide">
-      <div class="slide-header">
-        <h2>Adventure #5</h2>
-        <span class="step-tag">5 / 7</span>
-      </div>
-      <div class="embed-viewport">
-        <div class="embed-wrapper">
-          <div class="strava-embed-placeholder" data-embed-type="activity" data-embed-id="20832367338" data-style="standard" data-from-embed="false" data-token="7RBMUJqvxWvJ4XSgIl5qq8Vy-8hGM5LCTiMMrqTXhTs"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Slide 6 -->
-    <section class="slide">
-      <div class="slide-header">
-        <h2>Adventure #6</h2>
-        <span class="step-tag">6 / 7</span>
-      </div>
-      <div class="embed-viewport">
-        <div class="embed-wrapper">
-          <div class="strava-embed-placeholder" data-embed-type="activity" data-embed-id="21065533719" data-style="standard" data-from-embed="false" data-token="ZqEbBD0hJsrmHSbcIjDIxKftqGgojJrhKe24U6OE_xk"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Slide 7 -->
-    <section class="slide">
-      <div class="slide-header">
-        <h2>Adventure #7</h2>
-        <span class="step-tag">7 / 7</span>
-      </div>
-      <div class="embed-viewport">
-        <div class="embed-wrapper">
-          <div class="strava-embed-placeholder" data-embed-type="activity" data-embed-id="21077387507" data-style="standard" data-from-embed="false" data-token="QmlyKn02DKvFFRa3bhOI8nVd9T1RYgiNnzyzIF5QdqA"></div>
-        </div>
-      </div>
-    </section>
-
-    <!-- Slide 8: Full Route Map & Stats -->
-    <section class="slide">
-      <div class="slide-header">
-        <h2>Full Route Map (168 km Loop)</h2>
-        <span class="step-tag">Overview</span>
-      </div>
-      <div class="map-split-layout">
-        <aside class="route-stats-panel">
-          <div class="stat-item">
-            <div class="stat-label">Total Distance</div>
-            <div class="stat-value">168.0 km</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-label">Total Duration</div>
-            <div class="stat-value">26h 16m</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-label">Average Speed</div>
-            <div class="stat-value">6.4 km/h</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-label">Elevation Range</div>
-            <div class="stat-value">178 m – 287 m</div>
-          </div>
-          <div class="stat-item">
-            <div class="stat-label">Total Climb / Descent</div>
-            <div class="stat-value">+429 m / -441 m</div>
-          </div>
-        </aside>
-
-        <div class="map-container">
-          <iframe src="https://www.google.com/maps/d/embed?mid=16b5F895HU2L8NTVMziemBdJQMxRhBWc&ehbc=2E312F" allowfullscreen loading="lazy"></iframe>
-        </div>
-      </div>
-    </section>
-
-    <!-- Slide 9: The End -->
-    <section class="slide slide-cover slide-end">
-      <span class="badge">Thank You</span>
-      <h1>The end!</h1>
-      <p class="end-subtitle">Simcoe County Loop Trail • 168 km Completed</p>
-    </section>
-  </main>
-
-  <footer class="bottom-bar">
-    <button type="button" class="nav-btn" id="prevBtn">← Previous</button>
-    <div class="progress-dots" id="dotsContainer"></div>
-    <button type="button" class="nav-btn" id="nextBtn">Next →</button>
-  </footer>
-
-  <script>
-    const slides = Array.from(document.querySelectorAll('.slide'));
-    const prevBtn = document.getElementById('prevBtn');
-    const nextBtn = document.getElementById('nextBtn');
-    const slideCounter = document.getElementById('slideCounter');
-    const dotsContainer = document.getElementById('dotsContainer');
-    const fullscreenBtn = document.getElementById('fullscreenBtn');
-    const styleToggleBtn = document.getElementById('styleToggleBtn');
-
-    let currentIndex = 0;
-    let mapFocusMode = true;
-
-    slides.forEach((_, idx) => {
-      const dot = document.createElement('button');
-      dot.type = 'button';
-      dot.className = 'dot' + (idx === 0 ? ' active' : '');
-      dot.setAttribute('aria-label', `Go to slide ${idx + 1}`);
-      dot.addEventListener('click', () => goToSlide(idx));
-      dotsContainer.appendChild(dot);
-    });
-
-    const dots = Array.from(document.querySelectorAll('.dot'));
-
-    function alignViewportToMap(slide) {
-      const viewport = slide.querySelector('.embed-viewport');
-      if (!viewport) return;
-
-      if (!mapFocusMode) {
-        viewport.scrollTop = 0;
-        return;
-      }
-
-      const iframe = viewport.querySelector('iframe');
-      if (iframe && iframe.offsetHeight > viewport.clientHeight) {
-        const overflow = iframe.offsetHeight - viewport.clientHeight;
-        viewport.scrollTop = Math.min(overflow, 260);
-      } else {
-        viewport.scrollTop = 0;
-      }
-    }
-
-    function goToSlide(index) {
-      if (index < 0 || index >= slides.length) return;
-      currentIndex = index;
-
-      slides.forEach((slide, idx) => {
-        slide.classList.toggle('active', idx === currentIndex);
-        if (idx === currentIndex) {
-          requestAnimationFrame(() => alignViewportToMap(slide));
-        }
-      });
-
-      dots.forEach((dot, idx) => {
-        dot.classList.toggle('active', idx === currentIndex);
-      });
-
-      slideCounter.textContent = `${currentIndex + 1} / ${slides.length}`;
-      prevBtn.disabled = currentIndex === 0;
-      nextBtn.disabled = currentIndex === slides.length - 1;
-    }
-
-    prevBtn.addEventListener('click', () => goToSlide(currentIndex - 1));
-    nextBtn.addEventListener('click', () => goToSlide(currentIndex + 1));
-
-    styleToggleBtn.addEventListener('click', () => {
-      mapFocusMode = !mapFocusMode;
-      styleToggleBtn.textContent = mapFocusMode ? 'View: Map Focus' : 'View: Top (Photos)';
-      alignViewportToMap(slides[currentIndex]);
-    });
-
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'ArrowRight' || e.key === 'PageDown' || e.key === ' ') {
-        e.preventDefault();
-        goToSlide(currentIndex + 1);
-      } else if (e.key === 'ArrowLeft' || e.key === 'PageUp') {
-        e.preventDefault();
-        goToSlide(currentIndex - 1);
-      } else if (e.key === 'Home') {
-        e.preventDefault();
-        goToSlide(0);
-      } else if (e.key === 'End') {
-        e.preventDefault();
-        goToSlide(slides.length - 1);
-      } else if (e.key.toLowerCase() === 'f') {
-        toggleFullscreen();
-      }
-    });
-
-    let touchStartX = 0;
-    document.addEventListener('touchstart', (e) => {
-      touchStartX = e.changedTouches[0].screenX;
-    }, { passive: true });
-
-    document.addEventListener('touchend', (e) => {
-      const diff = e.changedTouches[0].screenX - touchStartX;
-      if (Math.abs(diff) > 50) {
-        if (diff < 0) goToSlide(currentIndex + 1);
-        else goToSlide(currentIndex - 1);
-      }
-    }, { passive: true });
-
-    function toggleFullscreen() {
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      } else {
-        document.exitFullscreen().catch(() => {});
-      }
-    }
-
-    fullscreenBtn.addEventListener('click', toggleFullscreen);
-
-    window.addEventListener('load', () => {
-      setTimeout(() => alignViewportToMap(slides[currentIndex]), 1200);
-    });
-
-    goToSlide(0);
-  </script>
-
-  <script src="https://strava-embeds.com/embed.js" async></script>
+<header class="top"><div class="ttl">Simcoe County Loop Trail - Aleks's adventures</div><div class="ctr"><button type="button" class="btop" id="sb">View: Map Focus</button><span class="cnt" id="sc">1 / 10</span><button type="button" class="btop" id="fb">⛶ Fullscreen</button></div></header>
+<footer class="bot"><button type="button" class="nbtn" id="pb">← Previous</button><div class="dots" id="dc"></div><button type="button" class="nbtn" id="nb">Next →</button></footer>
+<main class="stg">
+<section class="sl cov on"><span class="bdg">Show &amp; Tell</span><h1>Simcoe County Loop Trail<span>Aleks's adventures</span></h1><div class="hnt">Use <kbd>←</kbd> and <kbd>→</kbd> arrow keys to switch slides</div></section>
+<section class="sl"><div class="hd"><h2>Adventure #1</h2><span class="tag">1 / 7</span></div><div class="vp"><div class="wr"><div class="strava-embed-placeholder" data-embed-type="activity" data-embed-id="18851528278" data-style="standard" data-from-embed="false" data-token="ctCEVqKKS_HTw0u3CrSAhqA6ZB8ipxhDalFqZZ3HplI"></div></div></div></section>
+<section class="sl"><div class="hd"><h2>Adventure #2</h2><span class="tag">2 / 7</span></div><div class="vp"><div class="wr"><div class="strava-embed-placeholder" data-embed-type="activity" data-embed-id="19218403658" data-style="standard" data-from-embed="false" data-token="C2nmDiwMzu2i8UwHQKYjGZxYfGyYl4mxJN1wOZLDvEQ"></div></div></div></section>
+<section class="sl"><div class="hd"><h2>Adventure #3</h2><span class="tag">3 / 7</span></div><div class="vp"><div class="wr"><div class="strava-embed-placeholder" data-embed-type="activity" data-embed-id="19600513041" data-style="standard" data-from-embed="false" data-token="SHn22fOw8VTNenNc0w86JEoVYDaFUrfZaJZarAiOYdw"></div></div></div></section>
+<section class="sl"><div class="hd"><h2>Adventure #4</h2><span class="tag">4 / 7</span></div><div class="vp"><div class="wr"><div class="strava-embed-placeholder" data-embed-type="activity" data-embed-id="20548714006" data-style="standard" data-from-embed="false" data-token="nH8krHXMiphPrDXl9EGyEEIOcHuOIjSz0cDvQzmvzLY"></div></div></div></section>
+<section class="sl"><div class="hd"><h2>Adventure #5</h2><span class="tag">5 / 7</span></div><div class="vp"><div class="wr"><div class="strava-embed-placeholder" data-embed-type="activity" data-embed-id="20832367338" data-style="standard" data-from-embed="false" data-token="7RBMUJqvxWvJ4XSgIl5qq8Vy-8hGM5LCTiMMrqTXhTs"></div></div></div></section>
+<section class="sl"><div class="hd"><h2>Adventure #6</h2><span class="tag">6 / 7</span></div><div class="vp"><div class="wr"><div class="strava-embed-placeholder" data-embed-type="activity" data-embed-id="21065533719" data-style="standard" data-from-embed="false" data-token="ZqEbBD0hJsrmHSbcIjDIxKftqGgojJrhKe24U6OE_xk"></div></div></div></section>
+<section class="sl"><div class="hd"><h2>Adventure #7</h2><span class="tag">7 / 7</span></div><div class="vp"><div class="wr"><div class="strava-embed-placeholder" data-embed-type="activity" data-embed-id="21077387507" data-style="standard" data-from-embed="false" data-token="QmlyKn02DKvFFRa3bhOI8nVd9T1RYgiNnzyzIF5QdqA"></div></div></div></section>
+<section class="sl"><div class="hd"><h2>Full Route Map (168 km Loop)</h2><span class="tag">Overview</span></div><div class="ov"><aside class="st"><div class="si"><div class="slb">Distance</div><div class="svl">168.0 km</div></div><div class="si"><div class="slb">Duration</div><div class="svl">26h 16m</div></div><div class="si"><div class="slb">Avg Speed</div><div class="svl">6.4 km/h</div></div><div class="si"><div class="slb">Elevation</div><div class="svl">178–287 m</div></div><div class="si"><div class="slb">Climb / Desc</div><div class="svl">+429 / -441 m</div></div></aside><div class="mc"><iframe src="https://www.google.com/maps/d/embed?mid=16b5F895HU2L8NTVMziemBdJQMxRhBWc&ehbc=2E312F" allowfullscreen loading="lazy"></iframe></div></div></section>
+<section class="sl cov end"><span class="bdg">Thank You</span><h1>The end!</h1><p>Simcoe County Loop Trail • 168 km Completed</p></section>
+</main>
 </body>
 </html>
